@@ -1,12 +1,28 @@
 import os
 import random
 import sys
+import time
 import pygame as pg
 
 
 WIDTH, HEIGHT = 1100, 650
 DELTA = {pg.K_UP: (0, -5), pg.K_DOWN: (0, +5), pg.K_LEFT: (-5, 0), pg.K_RIGHT: (+5, 0)}  # 移動量の辞書
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+def gameover(screen: pg.Surface) -> None:
+    gameover_img = pg.Surface((1100, 650))
+    gameover_img.fill((0, 0, 0))
+    gameover_img.get_alpha()
+    gameover_txt = pg.font.Font(None, 100)
+    txt = gameover_txt.render("Game Over", True, (255, 255, 255))
+    gameover_img.blit(txt, [360, 300])
+    koukaton_img = pg.image.load("fig/8.png")
+    gameover_img.blit(koukaton_img, [310, 300])
+    gameover_img.blit(koukaton_img, [740, 300])
+    screen.blit(gameover_img, [0, 0])
+    pg.display.update()
+    time.sleep(5)
+
 
 def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
     """
@@ -37,13 +53,16 @@ def main():
     bb_img.set_colorkey((0, 0, 0))  # Surfaceの黒い部分の透過
     bb_rct = bb_img.get_rect()  # bb_imgをbb_rctに
     bb_rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)  # 画面内でランダムにbb_imgを設置
-    vx = +5
-    vy = +5
+    vx = +5  # bb_imgの縦の速度
+    vy = +5  # bb_imgの横の速度
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
         screen.blit(bg_img, [0, 0]) 
+        if kk_rct.colliderect(bb_rct):
+            gameover(screen)
+            return
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
