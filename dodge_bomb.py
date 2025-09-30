@@ -33,7 +33,7 @@ def gameover(screen: pg.Surface) -> None:
     """
     gameover_img = pg.Surface((1100, 650))
     gameover_img.fill((0, 0, 0))
-    gameover_img.get_alpha()
+    gameover_img.set_alpha(200)
     gameover_txt = pg.font.Font(None, 100)
     txt = gameover_txt.render("Game Over", True, (255, 255, 255))
     gameover_img.blit(txt, [360, 300])
