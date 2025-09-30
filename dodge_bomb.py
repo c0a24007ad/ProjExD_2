@@ -8,6 +8,20 @@ WIDTH, HEIGHT = 1100, 650
 DELTA = {pg.K_UP: (0, -5), pg.K_DOWN: (0, +5), pg.K_LEFT: (-5, 0), pg.K_RIGHT: (+5, 0)}  # 移動量の辞書
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
+    """
+    引数：こうかとんRectか爆弾Rect
+    戻り値：タプル（横方向判定結果, 縦方向判定結果）
+    画面内ならTrue, 画面外ならFalse
+    """
+    yoko = True
+    tate = True
+    if rct.left < 0 or WIDTH < rct.right:
+        yoko = False
+    if rct.top < 0 or HEIGHT < rct.bottom:
+        tate = False
+    return yoko, tate
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -21,8 +35,10 @@ def main():
     bb_img = pg.Surface((20, 20))  # 縦横20の正方形
     pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)  # 正方形に赤色の円を描画
     bb_img.set_colorkey((0, 0, 0))  # Surfaceの黒い部分の透過
-    bb_rct = bb_img.get_rect()
+    bb_rct = bb_img.get_rect()  # bb_imgをbb_rctに
     bb_rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)  # 画面内でランダムにbb_imgを設置
+    vx = +5
+    vy = +5
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -44,11 +60,16 @@ def main():
         # if key_lst[pg.K_RIGHT]:
         #     sum_mv[0] += 5
         kk_rct.move_ip(sum_mv)
+        if check_bound(kk_rct) != (True, True):
+            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)
+        bb_rct.move_ip(vx, vy)  # bb_rctの移動
+        yoko, tate = check_bound(bb_rct)
+        if not yoko:
+            vx *= -1
+        if not tate:
+            vy *=-1
         screen.blit(bb_img, bb_rct)
-        vx = +5
-        vy = +5
-        bb_rct.move_ip(vx, vy)
         pg.display.update()
         tmr += 1
         clock.tick(50)
