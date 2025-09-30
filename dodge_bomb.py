@@ -1,10 +1,11 @@
 import os
+import random
 import sys
 import pygame as pg
 
 
 WIDTH, HEIGHT = 1100, 650
-DELTA = {pg.K_UP: (0, -5), pg.K_DOWN: (0, +5), pg.K_LEFT: (-5, 0), pg.K_RIGHT: (+5, 0)}
+DELTA = {pg.K_UP: (0, -5), pg.K_DOWN: (0, +5), pg.K_LEFT: (-5, 0), pg.K_RIGHT: (+5, 0)}  # 移動量の辞書
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -17,6 +18,11 @@ def main():
     kk_rct.center = 300, 200
     clock = pg.time.Clock()
     tmr = 0
+    bb_img = pg.Surface((20, 20))  # 縦横20の正方形
+    pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)  # 正方形に赤色の円を描画
+    bb_img.set_colorkey((0, 0, 0))  # Surfaceの黒い部分の透過
+    bb_rct = bb_img.get_rect()
+    bb_rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)  # 画面内でランダムにbb_imgを設置
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -27,8 +33,8 @@ def main():
         sum_mv = [0, 0]
         for key, mv in DELTA.items():
             if key_lst[key]:
-                sum_mv[0] += mv[0]
-                sum_mv[1] += mv[1]
+                sum_mv[0] += mv[0]  # 左右の移動
+                sum_mv[1] += mv[1]  # 上下の移動
         # if key_lst[pg.K_UP]:
         #     sum_mv[1] -= 5
         # if key_lst[pg.K_DOWN]:
@@ -39,6 +45,10 @@ def main():
         #     sum_mv[0] += 5
         kk_rct.move_ip(sum_mv)
         screen.blit(kk_img, kk_rct)
+        screen.blit(bb_img, bb_rct)
+        vx = +5
+        vy = +5
+        bb_rct.move_ip(vx, vy)
         pg.display.update()
         tmr += 1
         clock.tick(50)
