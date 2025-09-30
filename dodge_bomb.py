@@ -10,6 +10,11 @@ DELTA = {pg.K_UP: (0, -5), pg.K_DOWN: (0, +5), pg.K_LEFT: (-5, 0), pg.K_RIGHT: (
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    """
+    引数：無し
+    戻り値：タプル（爆弾の大きさのSurfaceのリスト, 縦横の加速）
+    時間とともに爆弾が拡大、加速する
+    """
     bb_imgs = []
     for r in range(1, 11):
         bb_img = pg.Surface((20*r, 20*r))
@@ -21,6 +26,11 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
 
 
 def gameover(screen: pg.Surface) -> None:
+    """
+    引数：screen
+    戻り値：無し
+    爆弾に当たった時にGame Overの画面をscreenにblitする
+    """
     gameover_img = pg.Surface((1100, 650))
     gameover_img.fill((0, 0, 0))
     gameover_img.get_alpha()
@@ -72,8 +82,8 @@ def main():
             if event.type == pg.QUIT: 
                 return
         screen.blit(bg_img, [0, 0]) 
-        if kk_rct.colliderect(bb_rct):
-            gameover(screen)
+        if kk_rct.colliderect(bb_rct):  # 爆弾に当たった時
+            gameover(screen)  # ゲームオーバーの表示
             return
 
         key_lst = pg.key.get_pressed()
@@ -91,9 +101,9 @@ def main():
         # if key_lst[pg.K_RIGHT]:
         #     sum_mv[0] += 5
         kk_rct.move_ip(sum_mv)
-        avx = vx*bb_accs[min(tmr//500, 9)]
-        avy = vy*bb_accs[min(tmr//500, 9)]
-        bb_img = bb_imgs[min(tmr//500, 9)]
+        avx = vx*bb_accs[min(tmr//500, 9)]  # 時間経過による爆弾の横の速度
+        avy = vy*bb_accs[min(tmr//500, 9)]  # 時間経過による爆弾の縦の速度
+        bb_img = bb_imgs[min(tmr//500, 9)]  # 時間経過による爆弾の大きさ
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)
