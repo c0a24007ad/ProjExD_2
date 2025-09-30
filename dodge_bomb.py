@@ -9,6 +9,17 @@ WIDTH, HEIGHT = 1100, 650
 DELTA = {pg.K_UP: (0, -5), pg.K_DOWN: (0, +5), pg.K_LEFT: (-5, 0), pg.K_RIGHT: (+5, 0)}  # 移動量の辞書
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    bb_imgs = []
+    for r in range(1, 11):
+        bb_img = pg.Surface((20*r, 20*r))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        bb_img.set_colorkey((0, 0, 0))
+        bb_imgs.append(bb_img)
+    bb_accs = [a for a in range(1, 11)]
+    return bb_imgs, bb_accs
+
+
 def gameover(screen: pg.Surface) -> None:
     gameover_img = pg.Surface((1100, 650))
     gameover_img.fill((0, 0, 0))
@@ -55,6 +66,7 @@ def main():
     bb_rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)  # 画面内でランダムにbb_imgを設置
     vx = +5  # bb_imgの縦の速度
     vy = +5  # bb_imgの横の速度
+    bb_imgs, bb_accs = init_bb_imgs()
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -79,10 +91,13 @@ def main():
         # if key_lst[pg.K_RIGHT]:
         #     sum_mv[0] += 5
         kk_rct.move_ip(sum_mv)
+        avx = vx*bb_accs[min(tmr//500, 9)]
+        avy = vy*bb_accs[min(tmr//500, 9)]
+        bb_img = bb_imgs[min(tmr//500, 9)]
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)
-        bb_rct.move_ip(vx, vy)  # bb_rctの移動
+        bb_rct.move_ip(avx, avy)  # bb_rctの移動
         yoko, tate = check_bound(bb_rct)
         if not yoko:
             vx *= -1
