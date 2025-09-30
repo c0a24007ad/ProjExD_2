@@ -113,7 +113,7 @@ def main():
             vx *= -1
         if not tate:
             vy *=-1
-        screen.blit(bb_img, bb_rct)
+        screen.blit(bb_img, bb_rct)  # bb_imgをbb_rctにblitし動かせるように
         pg.display.update()
         tmr += 1
         clock.tick(50)
